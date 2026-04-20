@@ -1,47 +1,61 @@
-<html lang="en"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nectar test</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://x.wayin.com/ui/ngx.embed.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow Embed Test Page</title>
 
-<script>
-  // Helper: read a query parameter from the URL
-  function getQueryParam(param) {
+  <link rel="stylesheet" href="style.css">
+
+  <!-- NGX Embed Script -->
+  <script src="https://x.wayin.com/ui/ngx.embed.min.js"></script>
+
+  <script>
+    function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
-  }
+    }
 
-  // Listen for NGX embed ready
-  NGX.api('event:listen', 'embed:api:ready', (event) => {
-
-      // Get customerid from URL
+    NGX.api('event:listen', 'embed:api:ready', () => {
       const customerId = getQueryParam('customerid');
-
-      // Only set it if it exists
       if (customerId) {
-          NGX.api('form:set:customerid', customerId);
-          console.log("Customer ID sent to NGX:", customerId);
-      } else {
-          console.warn("No customerid found in URL");
+        NGX.api('form:set:customerid', customerId);
+        console.log("Customer ID sent to NGX:", customerId);
       }
-  });
-</script>
-</head>    
+    });
+  </script>
+</head>
+
 <body>
 
+  <!-- Banner -->
+  <header class="banner">
+    <div class="banner-content">
+      <h1>Grow Test Embed Page</h1>
+      <p>A simple test page showcasing a Grow embedded experience.</p>
+    </div>
+  </header>
 
+  <!-- Intro Text -->
+  <section class="content-block">
+    <p>
+      This page is used for testing Grow embeds with customer ID pass‑through,
+      responsive layouts, and iframe loading behavior.
+    </p>
+  </section>
 
-<div class="banner">
-    <h1>Grow test embed page </h1>
-    <p>A grow test embed page with the following functionality/p>
-</div>
-<!-- End overlay script code -->  
-<div class="content-block">
-<script src="https://x.wayin.com/ui/ngx.embed.min.js"></script>
-<iframe src="https://x.wayin.com/display/container/dc/a2c08955-56a9-4405-8e49-0c22b7a0d202?mode=adaptive&scrolling=no" frameborder="0" scrolling="no" width="100%" height="600" id="ngxFramea2c08955-56a9-4405-8e49-0c22b7a0d202" allowTransparency="true"></iframe>
-</div>
+  <!-- Embed -->
+  <section class="content-block">
+    <iframe
+      src="https://x.wayin.com/display/container/dc/a2c08955-56a9-4405-8e49-0c22b7a0d202?mode=adaptive&scrolling=no"
+      frameborder="0"
+      scrolling="no"
+      width="100%"
+      height="600"
+      id="ngxFramea2c08955-56a9-4405-8e49-0c22b7a0d202"
+      allowtransparency="true">
+    </iframe>
+  </section>
 
-
-
-<div id="give-freely-root-bcjindcccaagfpapjjmafapmmgkkhgoa" class="give-freely-root" data-extension-id="bcjindcccaagfpapjjmafapmmgkkhgoa" data-extension-name="JSON Formatter" style="display: block;"></div></body></html>
+</body>
+</html>
