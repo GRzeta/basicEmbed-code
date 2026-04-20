@@ -6,12 +6,10 @@ body {
 
 /* Banner with background image */
 .banner {
-  background-image: url("https://images.unsplash.com/1600x500/?abstract,technology");
-  background-size: cover;
-  background-position: center;
   height: 320px;
   display: flex;
   align-items: center;
+  background-color: #000;
 }
 
 .banner-content {
