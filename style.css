@@ -9,7 +9,7 @@ body {
   height: 320px;
   display: flex;
   align-items: center;
-  background-color: #000;
+  background-color: rebeccapurple;
 }
 
 .banner-content {
