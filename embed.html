@@ -1,1 +1,85 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nectar test</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        line-height: 2.0rem;
 
+    }
+    h1 {
+        color: #333;
+    }
+    p {
+        color: #666;
+    }
+    .banner {
+        background-color: #040403;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .banner h1 {
+        color: #fff;
+        line-height: 2.8rem;
+    }
+    .content-block {
+        display: inline-block;
+        width: 100%;
+        padding: 20px;
+        margin: 10px;
+        background-color: #fff;
+        border: 1px solid black;
+    }
+
+    ul {
+        list-style: none;
+        padding-inline-start: 0px;
+    }
+    
+
+       </style>
+<script src="https://x.wayin.com/ui/ngx.embed.min.js"></script>
+
+<script>
+  // Helper: read a query parameter from the URL
+  function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+  }
+
+  // Listen for NGX embed ready
+  NGX.api('event:listen', 'embed:api:ready', (event) => {
+
+      // Get customerid from URL
+      const customerId = getQueryParam('customerid');
+
+      // Only set it if it exists
+      if (customerId) {
+          NGX.api('form:set:customerid', customerId);
+          console.log("Customer ID sent to NGX:", customerId);
+      } else {
+          console.warn("No customerid found in URL");
+      }
+  });
+</script>
+</head>    
+<body>
+
+
+
+<div class="banner">
+    <h1>Yahoo test subscribe</h1>
+    <p>This page is using the advanced embed code to render a grow campaign and use the plaform api to send a value to the custoemer id</p>
+</div>
+<!-- End overlay script code -->  
+<div class="content-block">
+<script src="https://x.wayin.com/ui/ngx.embed.min.js"></script>
+<iframe src="https://x.wayin.com/display/container/dc/1c899407-b709-4bee-a769-39c2416cc132?mode=adaptive&amp;scrolling=no" frameborder="0" scrolling="no" width="100%" height="1768" id="ngxFrame1c899407-b709-4bee-a769-39c2416cc132" allowtransparency="true" data-ngx-key="0" style="transition: height 100ms linear, width 100ms linear; width: 100%; min-width: 100%; height: 1768px;"></iframe>
+</div>
+
+
+
+<div id="give-freely-root-bcjindcccaagfpapjjmafapmmgkkhgoa" class="give-freely-root" data-extension-id="bcjindcccaagfpapjjmafapmmgkkhgoa" data-extension-name="JSON Formatter" style="display: block;"></div></body></html>
