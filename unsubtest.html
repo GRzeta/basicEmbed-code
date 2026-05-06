@@ -26,7 +26,46 @@
 </head>
 
 <body>
+<!-- script to ready query parameters -->
+<script>
+(function () {
+  function applyParamsToIframe() {
+    var iframe = document.getElementsByTagName("iframe")[0];
+    if (!iframe) return;
 
+    var parentParams = new URLSearchParams(window.location.search);
+
+    var mapped = {
+      "nc.ol_tok": parentParams.get("nc.ol_tok"),
+      "nc.messageuid": parentParams.get("nc.message_uid"),
+      "nc.ci": parentParams.get("nc.ci"),
+      "nc.cn": parentParams.get("nc.cn"),
+    };
+
+    var urlObj = new URL(iframe.src);
+    var sp = urlObj.searchParams;
+
+    Object.keys(mapped).forEach(function (key) {
+      var val = mapped[key];
+      if (val !== null && val !== "") {
+        sp.set(key, val);
+      }
+    });
+
+    var newSrc = urlObj.toString();
+
+    if (iframe.src !== newSrc) {
+      iframe.src = newSrc;
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyParamsToIframe);
+  } else {
+    applyParamsToIframe();
+  }
+})();
+</script>
 
   <!-- Banner -->
   <header class="banner">
