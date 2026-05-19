@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow Embed Test Page</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://us-x.wayin.com/ui/ngx.embed.min.js"></script>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    NGX.api('event:listen', 'embed:api:ready', () => {
+      const customerId = getQueryParam('customerid');
+      if (customerId) {
+        NGX.api('form:set:customerid', customerId);
+        console.log("Customer ID sent to NGX:", customerId);
+      }
+    });
+  </script>
+</head>
+
+<body>
+<!-- script to ready query parameters -->
+<script>
+(function () {
+  function applyParamsToIframe() {
+    var iframe = document.getElementsByTagName("iframe")[0];
+    if (!iframe) return;
+
+    var parentParams = new URLSearchParams(window.location.search);
+
+    var mapped = {
+      "nc.ol_tok": parentParams.get("nc.ol_tok"),
+      "nc.ol_tok2": parentParams.get("nc.ol_tok2"),
+      "nc.messageuid": parentParams.get("nc.message_uid"),
+      "nc.ci": parentParams.get("nc.ci"),
+      "nc.cn": parentParams.get("nc.cn"),
+    };
+
+    var urlObj = new URL(iframe.src);
+    var sp = urlObj.searchParams;
+
+    Object.keys(mapped).forEach(function (key) {
+      var val = mapped[key];
+      if (val !== null && val !== "") {
+        sp.set(key, val);
+      }
+    });
+
+    var newSrc = urlObj.toString();
+
+    if (iframe.src !== newSrc) {
+      iframe.src = newSrc;
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyParamsToIframe);
+  } else {
+    applyParamsToIframe();
+  }
+})();
+</script>
+
+  <!-- Banner -->
+  <header class="banner">
+    <div class="banner-content">
+      <h1>Grow Test Embed Page</h1>
+      <p>A simple test page showcasing a Grow embedded experience.</p>
+    </div>
+  </header>
+
+  <!-- Intro Text -->
+  <section class="content-block">
+    <p>
+      Introduction text.
+    </p>
+  </section>
+
+  <!-- Embed -->
+  <section class="content-block">
+    <iframe
+      src="https://us-x.wayin.com/display/container/dc/ec49785e-f03f-486c-a235-db99f1ce6956?mode=adaptive&scrolling=no"
+      frameborder="0"
+      scrolling="no"
+      width="100%"
+      height="600"
+      id="ngxFrameec49785e-f03f-486c-a235-db99f1ce6956"
+      allowtransparency="true">
+    </iframe>
+  </section>
+
+</body>
+</html>
