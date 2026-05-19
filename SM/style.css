@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222;
+}
+
+/* Banner with background image */
+.banner {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  background-color: rebeccapurple;
+}
+
+.banner-content {
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 30px;
+  max-width: 700px;
+  margin-left: 40px;
+  border-radius: 6px;
+}
+
+.banner h1 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+}
+
+.banner p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Content sections */
+.content-block {
+  max-width: 100%;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+iframe {
+  border: none;
+}
