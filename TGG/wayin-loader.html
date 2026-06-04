@@ -106,13 +106,17 @@
             'https://grzeta.github.io/'
         ];
         if (trustedOrigins.includes(parentOrigin) || parentOrigin.endsWith('.thegoodguys.com.au') || parentOrigin.endsWith('.myshopify.dev')) {
+            let resizeTimer = null;
             function reportSize() {
-                const height = document.body.scrollHeight;
-                window.parent.postMessage({
-                    type: 'iframe-resize',
-                    height: height,
-                    wayinId: wayinId
-                }, parentOrigin);
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    const height = document.body.scrollHeight;
+                    window.parent.postMessage({
+                        type: 'iframe-resize',
+                        height: height,
+                        wayinId: wayinId
+                    }, parentOrigin);
+                }, 100);
             }
 
             window.addEventListener('message', function (event) {
