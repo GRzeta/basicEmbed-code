@@ -130,8 +130,10 @@
             if (scriptSource && sanitizedIframeElement) {
                 const scriptElement = document.createElement('script');
                 scriptElement.src = scriptSource;
+                scriptElement.onload = function () {
+                    document.body.appendChild(sanitizedIframeElement);
+                };
                 document.body.appendChild(scriptElement);
-                document.body.appendChild(sanitizedIframeElement);
             } else if (wayinUrl) {
                 const scriptElement = document.createElement('script');
                 scriptElement.src = wayinUrl;
