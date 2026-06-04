@@ -102,10 +102,9 @@
         const trustedOrigins = [
             'http://localhost:3100',
             'https://thegoodguys.com.au',
+            'https://grzeta.github.io',
+            'https://grzeta.github.io/'
         ];
-
-        // NOTE FOR TESTING: Add your GitHub Pages origin here, e.g. 'https://yourusername.github.io'
-        // or run locally via: npx serve -p 3100
         if (trustedOrigins.includes(parentOrigin) || parentOrigin.endsWith('.thegoodguys.com.au') || parentOrigin.endsWith('.myshopify.dev')) {
             function reportSize() {
                 const height = document.body.scrollHeight;
