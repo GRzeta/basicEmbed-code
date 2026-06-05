@@ -118,6 +118,7 @@
             }
 
             window.addEventListener('message', function (event) {
+                console.log('Received message:', event);
                 if (event.data && event.data.action === 'CAZetaTriggerScrollToTop') {
                     window.parent.postMessage(
                         {
