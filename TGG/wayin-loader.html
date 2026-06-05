@@ -1,3 +1,4 @@
+
 <!-- This loader is to help Wayin iFrames load -->
 <!DOCTYPE html>
 <html lang="en">
@@ -102,21 +103,16 @@
         const trustedOrigins = [
             'http://localhost:3100',
             'https://thegoodguys.com.au',
-            'https://grzeta.github.io',
-            'https://grzeta.github.io/'
         ];
+
         if (trustedOrigins.includes(parentOrigin) || parentOrigin.endsWith('.thegoodguys.com.au') || parentOrigin.endsWith('.myshopify.dev')) {
-            let resizeTimer = null;
             function reportSize() {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function () {
-                    const height = document.body.scrollHeight;
-                    window.parent.postMessage({
-                        type: 'iframe-resize',
-                        height: height,
-                        wayinId: wayinId
-                    }, parentOrigin);
-                }, 100);
+                const height = document.body.scrollHeight;
+                window.parent.postMessage({
+                    type: 'iframe-resize',
+                    height: height,
+                    wayinId: wayinId
+                }, parentOrigin);
             }
 
             window.addEventListener('message', function (event) {
@@ -134,10 +130,8 @@
             if (scriptSource && sanitizedIframeElement) {
                 const scriptElement = document.createElement('script');
                 scriptElement.src = scriptSource;
-                scriptElement.onload = function () {
-                    document.body.appendChild(sanitizedIframeElement);
-                };
                 document.body.appendChild(scriptElement);
+                document.body.appendChild(sanitizedIframeElement);
             } else if (wayinUrl) {
                 const scriptElement = document.createElement('script');
                 scriptElement.src = wayinUrl;
