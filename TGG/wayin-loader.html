@@ -119,6 +119,13 @@
 
             window.addEventListener('message', function (event) {
                 console.log('Received message:', event);
+                if (event.data && event.data.type === 'test-resize') {
+                window.parent.postMessage({
+                                type: 'iframe-resize',
+                                height: event.data.height,
+                                wayinId: wayinId
+                            }, parentOrigin);
+                }
                 if (event.data && event.data.action === 'CAZetaTriggerScrollToTop') {
                     window.parent.postMessage(
                         {

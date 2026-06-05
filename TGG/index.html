@@ -170,7 +170,7 @@
             </div>
             <div class="config-row">
                 <label>iframeAttributes src</label>
-                <input id="attr-iframeSrc" type="text" value="https://x.wayin.com/display/container/dc/a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb?mode=adaptive&scrolling=auto&debug=6" placeholder="https://xxx.wayin.com/...">
+                <input id="attr-iframeSrc" type="text" value="https://x.wayin.com/display/container/dc/a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb?mode=adaptive&scrolling=auto" placeholder="https://xxx.wayin.com/...">
             </div>
             <div class="config-row">
                 <button onclick="buildAttrIframe()">Apply &amp; Reload</button>
@@ -310,7 +310,7 @@
         const panel  = data.wayinId === attrId ? 'attr'
                      : data.wayinId === urlId  ? 'url'
                      : null;
-
+console.log('recieved msg:',event);
         if (data.type === 'iframe-resize') {
             if (panel) {
                 log(panel, 'resize', `iframe-resize  id=${data.wayinId}  height=${data.height}px`);
