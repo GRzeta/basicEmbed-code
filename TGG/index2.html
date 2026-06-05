@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Site - Double iFrame Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        header {
+            background: #cc0000;
+            color: white;
+            padding: 16px 20px;
+            margin: -20px -20px 20px;
+        }
+        header h1 { margin: 0; font-size: 1.4rem; }
+        header p  { margin: 4px 0 0; font-size: 0.85rem; opacity: 0.8; }
+
+        .page-content {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Shared config / section styles */
+        .test-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+        .test-section-header {
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            padding: 12px 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .test-section-header h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .mode-badge {
+            font-size: 0.75rem;
+            font-family: monospace;
+            background: #cc0000;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .test-section-body {
+            padding: 16px;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .config-row label {
+            min-width: 150px;
+            font-size: 0.85rem;
+            color: #444;
+        }
+        .config-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 0.85rem;
+        }
+        .config-row button {
+            padding: 6px 14px;
+            background: #cc0000;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .config-row button:hover { background: #aa0000; }
+
+        .note {
+            font-size: 0.78rem;
+            color: #888;
+            margin: 4px 0 12px;
+        }
+
+        .iframe-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin: 12px 0 4px;
+            font-family: monospace;
+        }
+
+        iframe.wayin-outer {
+            width: 100%;
+            border: 1px dashed #ccc;
+            display: block;
+            min-height: 80px;
+        }
+
+        .debug-panel {
+            margin-top: 12px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-family: monospace;
+            font-size: 0.78rem;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+        .debug-panel h4 { margin: 0 0 8px; color: #9cdcfe; font-size: 0.8rem; font-weight: normal; }
+        .log-entry { margin: 2px 0; }
+        .log-entry.resize { color: #b5cea8; }
+        .log-entry.scroll { color: #ce9178; }
+        .log-entry.error  { color: #f44747; }
+        .log-entry.info   { color: #9cdcfe; }
+
+        hr.section-divider {
+            border: none;
+            border-top: 2px dashed #ddd;
+            margin: 8px 0 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>The Good Guys — Test Store (Client Simulation)</h1>
+    <p>Double iFrame reproduction test &mdash; wayin-loader &rarr; inner Wayin iFrame</p>
+</header>
+
+<div class="page-content">
+
+    <!-- ═══════════════════════════════════════════════════════
+         MODE 1 — iframeAttributes (scriptSource + inner iframe)
+         This is the "double iframe" path: the loader receives a
+         scriptSource URL and an iframeAttributes string, appends
+         both to the DOM, producing iframe #1 → loader → iframe #2.
+    ════════════════════════════════════════════════════════════ -->
+    <div class="test-section" id="section-attr">
+        <div class="test-section-header">
+            <h2>Mode 1 — iframeAttributes</h2>
+            <span class="mode-badge">scriptSource + inner iframe</span>
+        </div>
+        <div class="test-section-body">
+
+            <div class="config-row">
+                <label>Wayin ID</label>
+                <input id="attr-id" type="text" value="a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb" placeholder="e.g. my-campaign-id">
+            </div>
+            <div class="config-row">
+                <label>Loader URL</label>
+                <input id="attr-loader" type="text" value="wayin-loader.html" placeholder="path or URL to wayin-loader2.html">
+            </div>
+            <div class="config-row">
+                <label>scriptSource</label>
+                <input id="attr-scriptSource" type="text" value="https://x.wayin.com/ui/ngx.embed.min.js" placeholder="https://xxx.wayin.com/...">
+            </div>
+            <div class="config-row">
+                <label>iframeAttributes src</label>
+                <input id="attr-iframeSrc" type="text" value="https://x.wayin.com/display/container/dc/a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb?mode=adaptive&scrolling=auto" placeholder="https://xxx.wayin.com/...">
+            </div>
+            <div class="config-row">
+                <button onclick="buildAttrIframe()">Apply &amp; Reload</button>
+            </div>
+            <p class="note">
+                Passes <code>scriptSource</code> + <code>iframeAttributes</code> to the loader.
+                The loader appends a &lt;script&gt; and a second &lt;iframe&gt; — the double-iframe path.
+            </p>
+
+            <hr class="section-divider">
+
+            <div class="iframe-label">&#8627; iframe #1 (wayin-loader.html)</div>
+            <!--
+                OUTER IFRAME — points to wayin-loader.html.
+                wayin-loader.html then creates INNER IFRAME #2 via iframeAttributes.
+            -->
+            <iframe
+                id="attr-outer-iframe"
+                class="wayin-outer"
+                title="Wayin Widget — iframeAttributes mode"
+                scrolling="no"
+                frameborder="0"
+                allowtransparency="true"
+                height="400">
+            </iframe>
+
+            <div class="debug-panel">
+                <h4>postMessage log</h4>
+                <div id="attr-log"><span class="log-entry info">Waiting for messages…</span></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         MODE 2 — url (single script tag)
+         The loader receives a `url` param and injects a single
+         <script> tag — no inner iframe is created by the loader.
+         Only iframe #1 (the loader) exists.
+    ════════════════════════════════════════════════════════════ -->
+    <div class="test-section" id="section-url">
+        <div class="test-section-header">
+            <h2>Mode 2 — url</h2>
+            <span class="mode-badge">single script tag</span>
+        </div>
+        <div class="test-section-body">
+
+            <div class="config-row">
+                <label>Wayin ID</label>
+                <input id="url-id" type="text" value="a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb" placeholder="e.g. my-campaign-id">
+            </div>
+            <div class="config-row">
+                <label>Loader URL</label>
+                <input id="url-loader" type="text" value="wayin-loader2.html" placeholder="path or URL to wayin-loader2.html">
+            </div>
+            <div class="config-row">
+                <label>url (script src)</label>
+                <input id="url-src" type="text" value="https://x.wayin.com/embed/a3a6c6c5-60ca-4c67-9e9a-4749d2baa8eb?mode=adaptive&scrolling=auto" placeholder="https://xxx.wayin.com/...">
+            </div>
+            <div class="config-row">
+                <button onclick="buildUrlIframe()">Apply &amp; Reload</button>
+            </div>
+            <p class="note">
+                Passes <code>url</code> to the loader. The loader injects a single &lt;script&gt; tag —
+                only one iframe (the loader itself) is present.
+            </p>
+
+            <hr class="section-divider">
+
+            <div class="iframe-label">&#8627; iframe #1 (wayin-loader2.html)</div>
+            <iframe
+                id="url-outer-iframe"
+                class="wayin-outer"
+                title="Wayin Widget — url mode"
+                scrolling="no"
+                frameborder="0"
+                allowtransparency="true"
+                height="400">
+            </iframe>
+
+            <div class="debug-panel">
+                <h4>postMessage log</h4>
+                <div id="url-log"><span class="log-entry info">Waiting for messages…</span></div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /.page-content -->
+
+<script>
+    // parentOrigin must match a trustedOrigins entry in wayin-loader.html.
+    // When served via `npx serve -p 3100` this will be http://localhost:3100.
+    const parentOrigin = window.location.origin;
+
+    // ── Mode 1: iframeAttributes ──────────────────────────────────────────
+    function buildAttrIframe() {
+        const loader       = document.getElementById('attr-loader').value.trim();
+        const id           = document.getElementById('attr-id').value.trim();
+        const scriptSource = document.getElementById('attr-scriptSource').value.trim();
+        const innerSrc     = document.getElementById('attr-iframeSrc').value.trim();
+
+        const iframeAttrs = `src='${innerSrc}' frameborder='0' scrolling='auto' width='100%' height='600' id='ngxFrame${id}' allowTransparency='false'`;
+
+        const params = new URLSearchParams({
+            id,
+            parentOrigin,
+            scriptSource,
+            iframeAttributes: iframeAttrs,
+        });
+
+        const iframe = document.getElementById('attr-outer-iframe');
+        iframe.src = `${loader}?${params.toString()}`;
+        log('attr', 'info', `Outer iframe src set → ${iframe.src}`);
+    }
+
+    // ── Mode 2: url ───────────────────────────────────────────────────────
+    function buildUrlIframe() {
+        const loader = document.getElementById('url-loader').value.trim();
+        const id     = document.getElementById('url-id').value.trim();
+        const url    = document.getElementById('url-src').value.trim();
+
+        const params = new URLSearchParams({ id, parentOrigin, url });
+
+        const iframe = document.getElementById('url-outer-iframe');
+        iframe.src = `${loader}?${params.toString()}`;
+        log('url', 'info', `Outer iframe src set → ${iframe.src}`);
+    }
+
+    // ── postMessage listener — routes by wayinId prefix ──────────────────
+    window.addEventListener('message', function (event) {
+        const data = event.data;
+        if (!data || typeof data !== 'object') return;
+
+        // Work out which section the message came from by matching wayinId
+        const attrId = document.getElementById('attr-id').value.trim();
+        const urlId  = document.getElementById('url-id').value.trim();
+        const panel  = data.wayinId === attrId ? 'attr'
+                     : data.wayinId === urlId  ? 'url'
+                     : null;
+
+        if (data.type === 'iframe-resize') {
+            if (panel) {
+                log(panel, 'resize', `iframe-resize  id=${data.wayinId}  height=${data.height}px`);
+                const iframe = document.getElementById(`${panel}-outer-iframe`);
+                if (data.height > 0) iframe.style.height = data.height + 'px';
+            } else {
+                log('attr', 'info', `iframe-resize (unknown id=${data.wayinId}) height=${data.height}px`);
+            }
+        } else if (data.type === 'wayin-scroll-top') {
+            if (panel) log(panel, 'scroll', `wayin-scroll-top  id=${data.wayinId}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            if (panel) log(panel, 'info', `Unknown message: ${JSON.stringify(data)}`);
+        }
+    });
+
+    function log(panel, type, message) {
+        const container = document.getElementById(`${panel}-log`);
+        const placeholder = container.querySelector('.log-entry.info');
+        if (placeholder?.textContent === 'Waiting for messages…') {
+            container.innerHTML = '';
+        }
+        const ts   = new Date().toISOString().substring(11, 23);
+        const line = document.createElement('div');
+        line.className = `log-entry ${type}`;
+        line.textContent = `[${ts}] ${message}`;
+        container.appendChild(line);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Build both iframes on page load
+    buildAttrIframe();
+    buildUrlIframe();
+</script>
+
+</body>
+</html>
