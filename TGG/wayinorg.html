@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayin Loader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const wayinId = urlParams.get('id');
+        const parentOrigin = urlParams.get('parentOrigin');
+
+        function showError(message, details = '') {
+            //safely set the error message to avoid xss
+            console.error(message, details);
+            const errorElement = document.createElement('p');
+            errorElement.textContent = `${message}${details ? ': ' + details : ''}`;
+            document.body.appendChild(errorElement);
+            return null;
+        }
+
+        function validateWayinUrl(url, field) {
+            if (!url) return null;
+
+            try {
+                const parsedUrl = new URL(url);
+                if (parsedUrl.hostname.endsWith('.wayin.com')) {
+                    if (parsedUrl.protocol !== 'https:') {
+                        return showError(`Invalid ${field} protocol`, parsedUrl.protocol);
+                    }
+                    return url;
+                } else {
+                    return showError(`Invalid ${field} domain`, parsedUrl.hostname);
+                }
+            } catch (error) {
+                return showError(`Invalid ${field}`, error.message);
+            }
+        }
+
+        function validatedAndSanitizeIframeAttributes(rawAttributes) {
+            if (!rawAttributes) return null;
+
+            // create a tmp dom element to parse attributes
+            const tempElement = document.createElement('div');
+            tempElement.innerHTML = `<iframe ${rawAttributes}></iframe>`;
+            if (tempElement.childElementCount !== 1 ||
+                tempElement.firstElementChild.tagName !== 'IFRAME') {
+                return showError('Invalid iframe attributes', rawAttributes);
+            }
+            const tempIframe = tempElement.firstElementChild;
+
+            if (!tempIframe || tempIframe.tagName !== 'IFRAME') {
+                return showError('Invalid iframe attributes', rawAttributes);
+            }
+
+            const SAFE_ATTRS = [
+                'src', 'id', 'title', 'allowfullscreen', 'loading',
+                'width', 'height', 'frameborder', 'scrolling',
+                'allowtransparency', 'aria-label'
+            ];
+
+            const srcValue = tempIframe.getAttribute('src');
+            if (!srcValue) {
+                return showError('iframeAttributes must contain a src attribute');
+            }
+
+            const validatedSrc = validateWayinUrl(srcValue, 'iframeAttributes');
+            if (!validatedSrc) {
+                return null;
+            }
+
+            const sanitizedElement = document.createElement('iframe');
+            sanitizedElement.setAttribute('src', validatedSrc);
+
+            SAFE_ATTRS.forEach(attr => {
+                if (attr != 'src' && tempIframe.hasAttribute(attr)) {
+                    sanitizedElement.setAttribute(attr, tempIframe.getAttribute(attr));
+                }
+            });
+
+            return sanitizedElement;
+
+        }
+
+
+        const wayinUrl = validateWayinUrl(urlParams.get('url'), 'url');
+        const scriptSource = validateWayinUrl(urlParams.get('scriptSource'), 'scriptSource');
+        const rawIframeAttributes = urlParams.get('iframeAttributes');
+        const sanitizedIframeElement = rawIframeAttributes ? validatedAndSanitizeIframeAttributes(rawIframeAttributes) : null;
+
+        const trustedOrigins = [
+            'http://localhost:3100',
+            'https://thegoodguys.com.au',
+            'https://grzeta.github.io',
+            'https://grzeta.github.io/'
+        ];
+
+        if (trustedOrigins.includes(parentOrigin) || parentOrigin.endsWith('.thegoodguys.com.au') || parentOrigin.endsWith('.myshopify.dev')) {
+            function reportSize() {
+                const height = document.body.scrollHeight;
+                window.parent.postMessage({
+                    type: 'iframe-resize',
+                    height: height,
+                    wayinId: wayinId
+                }, parentOrigin);
+            }
+
+            window.addEventListener('message', function (event) {
+                if (event.data && event.data.action === 'CAZetaTriggerScrollToTop') {
+                    window.parent.postMessage(
+                        {
+                            type: 'wayin-scroll-top',
+                            wayinId: wayinId,
+                        },
+                        parentOrigin,
+                    );
+                }
+            });
+
+            if (scriptSource && sanitizedIframeElement) {
+                const scriptElement = document.createElement('script');
+                scriptElement.src = scriptSource;
+                document.body.appendChild(scriptElement);
+                document.body.appendChild(sanitizedIframeElement);
+            } else if (wayinUrl) {
+                const scriptElement = document.createElement('script');
+                scriptElement.src = wayinUrl;
+                document.head.appendChild(scriptElement);
+            } else {
+                showError('No valid Wayin URL or script source provided');
+            }
+
+            // Setup resize detection after a delay to let Wayin initialize
+            setTimeout(() => {
+                reportSize();
+
+                // mutation observer to catch changes in the DOM
+                const observer = new MutationObserver(function () {
+                    reportSize();
+                });
+
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    characterData: true,
+                });
+
+                // Catch resize events
+                window.addEventListener('resize', reportSize);
+
+                // Catch click events, but wait for animation to finish if there are any
+                document.addEventListener('click', function () {
+                    setTimeout(reportSize, 300);
+                });
+
+                // fallback periodic checks in case something else changes the height
+                setInterval(reportSize, 2000);
+            }, 1500);
+
+        } else {
+            console.error('Unauthorized domain:', parentOrigin);
+            showError('Unauthorized domain', parentOrigin);
+        }
+    </script>
+</body>
+
+</html>
