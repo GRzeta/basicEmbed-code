@@ -60,7 +60,7 @@
 
         if (signedIn) {
           // This must be a dedicated, non-sensitive Keycloak token claim.
-          const customerId = keycloak.tokenParsed?.customer_id;
+          const customerId = keycloak.tokenParsed?.sub;
 
           if (!customerId) {
             status.textContent = "Signed in, but no customer ID is available.";
